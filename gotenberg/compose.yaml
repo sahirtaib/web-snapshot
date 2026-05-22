@@ -1,0 +1,62 @@
+# ============================================================================
+# Docker Compose Configuration for Gotenberg
+# ============================================================================
+# 
+# This file sets up Gotenberg, the service that creates PDFs and images
+# for Web Snapshot.
+#
+# TO START GOTENBERG:
+#   1. Open a terminal in the folder with this file
+#   2. Run: `docker-compose up` or `docker-compose up -d`
+#   3. Wait for the message "[SYSTEM] api: server started on [::]:3000"
+#
+# TO STOP GOTENBERG:
+#   Press Ctrl+C in this terminal, or run: `docker-compose down -v`
+#
+# TO CHANGE THE PORT:
+#   If port 3000 is already in use on your computer, you can change it:
+#   1. Change "3000:3000" to something like "3001:3000" below
+#   2. Update Joget settings to use port 3001 instead
+#
+# ============================================================================
+
+services:
+  gotenberg:
+    image: gotenberg/gotenberg:8-chromium
+    container_name: gotenberg
+    user: root
+    environment:
+      TINI_SUBREAPER: 1
+      DEBIAN_FRONTEND: noninteractive
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        # Update font sources to include common desktop fonts
+        sed -i 's/Components: main/Components: main contrib non-free non-free-firmware/g' /etc/apt/sources.list.d/debian.sources 2>/dev/null || true
+        sed -i 's/ main/ main contrib non-free/g' /etc/apt/sources.list 2>/dev/null || true
+
+        # Accept Microsoft font license
+        echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
+
+        # Install fonts for: Chinese/Japanese/Korean, emojis, and many others
+        apt-get update
+        apt-get install -y fonts-noto fonts-noto-cjk fonts-noto-color-emoji fonts-urw-base35 fonts-dejavu fonts-ubuntu fonts-cascadia-code fonts-liberation fonts-crosextra-carlito fonts-lmodern fonts-takao-gothic fonts-droid-fallback ttf-mscorefonts-installer
+        
+        # Clean up
+        rm -rf /var/lib/apt/lists/*
+        
+        # Build font cache
+        fc-cache -fv
+        
+        # Start Gotenberg
+        exec su -s /bin/sh gotenberg -c 'exec /usr/bin/tini -- gotenberg'
+    networks:
+      - shared
+
+# Defines the Docker network that connects Gotenberg to Joget
+networks:
+  shared:
+    # This network must already exist on your Docker system
+    # If Joget unable to reach Gotenberg server, ask your IT team for Docker assistance
+    external: true
