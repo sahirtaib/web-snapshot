@@ -1,6 +1,6 @@
 package org.joget.support.websnap.gotenberg;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * https://gotenberg.dev/docs/convert-with-chromium/convert-url-to-pdf#rendering-behavior

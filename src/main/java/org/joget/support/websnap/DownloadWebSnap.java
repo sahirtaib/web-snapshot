@@ -9,9 +9,9 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppPluginUtil;
@@ -74,7 +74,7 @@ public class DownloadWebSnap extends DataListActionDefault implements PluginWebS
              * when request object is not available, should fallback to appId, viewId, keyId and menuId provided as params
              */
             String targetUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() +
-                request.getAttribute("javax.servlet.forward.request_uri").toString() +
+                request.getAttribute("jakarta.servlet.forward.request_uri").toString() +
                 "?_mode=edit&embed=true&id=" + id;
             
             byte[] snapshot = null;
