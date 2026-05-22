@@ -4,7 +4,7 @@
     <groupId>org.joget.support.websnap</groupId>
     <artifactId>web-snapshot</artifactId>
     <packaging>bundle</packaging>
-    <version>8.1.0</version>
+    <version>8.2.0</version>
     <url>http://www.joget.org</url>
 
     <properties>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.joget</groupId>
             <artifactId>wflow-core</artifactId>
-            <version>8.1-SNAPSHOT</version>
+            <version>8.2-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet</groupId>
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.9.0</version>
+            <version>2.13.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
