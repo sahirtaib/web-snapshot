@@ -1,11 +1,11 @@
 # Description
 
-Web Snapshot is an elegant plugin that gives you downloadable browser-accurate snapshots of your Datalist's forms with just one click. Perfect for creating professional reports, archiving data, or sharing record information.
+Web Snapshot is an elegant plugin that gives you browser-accurate snapshots with just one click. Perfect for creating professional reports, archiving data, or sharing information.
 
 # Features
 
-* **One-Click Downloads** - Easily convert Joget runtime pages into a PDF, PNG, WEBP or JPEG
-* **Batch Processing** - Download multiple records at once and get them automatically packaged in a ZIP file
+* **One-Click Downloads** - Easily convert Joget forms and userviews into a PDF, PNG, WEBP or JPEG
+* **Batch Processing** - Download multiple forms in DataList at once and get them packaged in a ZIP file
 * **Browser-Accurate Rendering** - Captures exactly as what you see on screen, with formatting and styling
 * **Custom File Names** - Name your snapshot files whatever makes sense for you
 * **Seamless Integration** - Works directly within your Joget without complicated setup
@@ -21,15 +21,15 @@ Get the Web Snapshot plugin JAR file from the releases page.
 
 ## Step 2: Add to Joget
 
-1. Log in to Joget with admin access
+1. Log into Joget with admin access
 2. Go to **Admin > Manage Plugins**
-3. Click **Upload Plugin**
+3. Click **Choose File**
 4. Choose the Web Snapshot JAR file
-5. Click **Save**
+5. Click **Upload**
 
 ## Step 3: Verify Installation
 
-You should see "Web Snapshot" listed in your plugins. You're ready to move on!
+You should see "Web Snapshot" listed in your plugins. You're ready to go!
 
 > **Note:** You need Joget 8.0 or newer for this plugin to work.
 
@@ -52,17 +52,17 @@ The `compose.yaml` file in this project has everything you need to start Gotenbe
 
 > **Notes:** Leave this terminal window open while you use Web Snapshot. When you're done, press `Ctrl+C` to stop it.
 
+> **Pro Tips:** Use `docker compose up -d` to keep it running in background. Then `docker compose down -v` to shut it down.
+
 **If you don't have Docker:**
 
 You can install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop) or ask your IT team for help.
-
-> **Pro Tips:** Use `docker compose up -d` to keep it running in background. Then `docker compose down -v` to shut it down.
 
 ## Step 2: Connect Joget to Gotenberg
 
 1. In Joget, go to **Admin > Settings**
 2. Look for **Gotenberg Server** settings
-3. Enter these details:
+3. Review the default settings:
    - **Scheme:** `http`
    - **Domain:** `gotenberg.local`
    - **Port:** `3000`
@@ -80,7 +80,7 @@ You can install Docker Desktop from [docker.com](https://www.docker.com/products
 
 > **Pro Tips:** Fine tune the screen size, paper size, margins, scale, etc to get accurate results
 
-**Done!** You now have Web Snapshot button ready to use in List Builder (Datalist).
+**Done!** Your Web Snapshot is ready to use.
 
 # Using Web Snapshot
 
@@ -88,23 +88,27 @@ You can install Docker Desktop from [docker.com](https://www.docker.com/products
 
 Here's how to use Web Snapshot in your day-to-day work:
 
-### Download a Single Record
+### Download Snapshot For A Userview
 
-1. Open the Datalist configured with Web Snapshot
-2. Check (tick) the box of the specific row
-3. Click **Download WebSnap** (camera icon)
-4. The file downloads in a few seconds with a friendly name
+1. Make sure to **Publish** the App
+1. Navigate into UI Builder
+3. Choose the menu then click on **Edit Page Components** button
+4. Drag **PageSnap** into builder canvas
+5. Click **Done Editing Page Components**
+6. Click **Save** button
+7. Click **Launch** button
+8. Navigate to the userview menu which contains the newly added **PageSnap** button
+9. Click on the **PageSnap** button to download a snapshot
 
-### Download Multiple Records
+### Download Multiple Form Snapshots From A DataList
 
-If you need snapshots of many records at once:
+1. In List Builder, drag **FormSnap** into builder canvas
+2. Click **Save** button
+3. Navigate to the userview menu which contains the newly added **FormSnap** button
+4. Tick multiple rows in your DataList
+5. Click **FormSnap** button to download snapshot for selected rows
 
-1. Select multiple records in your list (use the checkbox at the start of each row)
-2. Click **Download WebSnap**
-3. A ZIP file will download with all your PDFs/images inside
-4. Open the ZIP and find your files
-
-> **Warning:** It's not recommended to download large number of snapshots. This will most likely consume high CPU/RAM/time for Joget/Gotenberg to complete which then may affect other users.
+> **Warning:** It's not recommended to download large number of snapshots from a DataList. This will most likely consume high CPU/RAM/time for Joget/Gotenberg to complete which then may affect other users.
 
 ### File Names
 

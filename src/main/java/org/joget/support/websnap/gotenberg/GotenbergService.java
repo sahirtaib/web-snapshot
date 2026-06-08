@@ -1,5 +1,6 @@
 package org.joget.support.websnap.gotenberg;
 
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.support.websnap.Activator;
 import org.json.JSONArray;
@@ -15,6 +16,8 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Before calling to Gotenberg endpoints:
@@ -226,7 +229,24 @@ public class GotenbergService {
         return body;
     }
 
-    public boolean pingServer() {
+    public void testGotenbergConnection(HttpServletResponse response, String pluginName) {
+        String message = "";
+        if (isHealthy()) {
+            message = AppPluginUtil.getMessage("websnap.connection.ok", pluginName, Activator.MESSAGE_PATH);
+        } else {
+            message = AppPluginUtil.getMessage("websnap.connection.fail", pluginName, Activator.MESSAGE_PATH);
+        }
+        
+        try {
+            JSONObject body = new JSONObject();
+            body.accumulate("message", message);
+            body.write(response.getWriter());
+        } catch (Exception e) {
+            LogUtil.error(getClassName(), e, "Error writing JSON response");
+        }
+    }
+
+    public boolean isHealthy() {
         try {
             ResponseEntity<Void> response = restTemplate.execute(
                 getBaseUrl() + healthEndpoint, 
@@ -240,7 +260,7 @@ public class GotenbergService {
              * add debug toggle in WebSnap.json?
              */
             if (Activator.getGotenbergService().getDebugMode()) {
-                LogUtil.info(getClassName(), "[pingServer] response Status: " + response.getStatusCode());
+                LogUtil.info(getClassName(), "Health: " + response.getStatusCode());
             }
             
             return response != null && response.getStatusCode().is2xxSuccessful();

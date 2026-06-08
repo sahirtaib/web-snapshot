@@ -183,30 +183,30 @@
         "type": "header"
     }]
 }, {
-    "title": "@@websnap.gotenberg.title@@",
+    "title": "@@websnap.gotenberg.server@@",
     "properties": [{
         "name": "gotenbergScheme",
-        "label": "@@websnap.gotenberg.scheme@@",
+        "label": "@@websnap.server.scheme@@",
         "type": "textfield",
         "required": "true",
         "value": "http"
     }, {
         "name": "gotenbergDomain",
-        "label": "@@websnap.gotenberg.domain@@",
+        "label": "@@websnap.server.domain@@",
         "type": "textfield",
         "required": "true",
         "value": "gotenberg"
     }, {
         "name": "gotenbergPort",
-        "label": "@@websnap.gotenberg.port@@",
+        "label": "@@websnap.server.port@@",
         "type": "textfield",
         "required": "true",
         "value": "3000"
     }],
     "buttons": [{
-        "name": "testConnection",    
-        "label": "@@websnap.gotenberg.connection.test@@",
-        "ajax_url": "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.support.websnap.DownloadWebSnap/service?action=testConnection",
+        "name": "testGotenbergConnection",    
+        "label": "@@websnap.connection.test@@",
+        "ajax_url": "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.support.websnap.DataListAction/service?action=testGotenbergConnection",
         "fields": ["gotenbergScheme", "gotenbergDomain", "gotenbergPort"]
     }]
 }]

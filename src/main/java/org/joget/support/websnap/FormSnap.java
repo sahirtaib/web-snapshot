@@ -1,13 +1,8 @@
 package org.joget.support.websnap;
 
-import java.beans.Introspector;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,18 +14,14 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListActionDefault;
 import org.joget.apps.datalist.model.DataListActionResult;
-import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.support.websnap.gotenberg.GotenbergService;
 import org.joget.support.websnap.gotenberg.UrlToPdfPayload;
 import org.joget.support.websnap.gotenberg.UrlToImagePayload;
 import org.joget.workflow.util.WorkflowUtil;
-import org.json.JSONObject;
 
-public class DownloadWebSnap extends DataListActionDefault implements PluginWebSupport {
-
-    private static final String MESSAGE_PATH = "messages/WebSnap";
-
+public class FormSnap extends DataListActionDefault implements PluginWebSupport {
+    
     @Override
     public DataListActionResult executeAction(DataList dataList, String[] ids) {
         DataListActionResult result = new DataListActionResult();
@@ -127,67 +118,30 @@ public class DownloadWebSnap extends DataListActionDefault implements PluginWebS
 
         HttpServletResponse response = WorkflowUtil.getHttpServletResponse();
         String fileNameStr = getPropertyString("fileName");
-        String fileName = (fileNameStr != null && !fileNameStr.isEmpty()) ? fileNameStr : "web-snapshot";
+        String fileName = (fileNameStr != null && !fileNameStr.isEmpty()) ? fileNameStr : AppPluginUtil.getMessage("websnap.fileName.default", getClassName(), Activator.MESSAGE_PATH);
         fileName += "-" + System.currentTimeMillis();
 
         if (snapshotCount == 1) {
             byte[] snapshot = snapshots.values().iterator().next();
-            streamSingleSnapshot(request, response, snapshot, fileName);
+
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("snapshot", snapshot);
+            payload.put("fileName", fileName);
+            payload.put("fileExtension", getPropertyString("fileExtension"));
+            
+            Response send = new Response(response, payload);
+            send.singleSnapshot();
         } else {
-            streamZippedSnapshots(request, response, snapshots, fileName);
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("snapshots", snapshots);
+            payload.put("fileName", fileName);
+            payload.put("fileExtension", getPropertyString("fileExtension"));
+            
+            Response send = new Response(response, payload);
+            send.zippedSnapshots();
         }
         
         return null;
-    }
-
-    protected void streamSingleSnapshot(HttpServletRequest request, HttpServletResponse response, byte[] snapshot, String fileName) {
-        String mimeType = getPropertyString("fileExtension").equalsIgnoreCase("pdf")
-            ? "application/pdf"
-            : "image/" + getPropertyString("fileExtension").toLowerCase();
-        
-        try {
-            writeResponse(request, response, snapshot, fileName + "." + getPropertyString("fileExtension"), mimeType);
-        } catch (Exception e) {
-            LogUtil.error(getClassName(), e, "Error streaming file");
-        }
-    }
-
-    protected void streamZippedSnapshots(HttpServletRequest request, HttpServletResponse response, Map<String, byte[]> snapshots, String fileName) {        
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ZipOutputStream zip = new ZipOutputStream(baos)) {
-            
-            for (Map.Entry<String, byte[]> snapshot : snapshots.entrySet()) {
-                String id = snapshot.getKey();
-                byte[] bytes = snapshot.getValue();
-
-                zip.putNextEntry(new ZipEntry(id + "." + getPropertyString("fileExtension")));
-                zip.write(bytes);
-                zip.closeEntry();
-            }
-            
-            zip.finish();
-            
-            writeResponse(request, response, baos.toByteArray(), fileName + ".zip", "application/zip");
-            
-        } catch (Exception e) {
-            LogUtil.error(getClassName(), e, "Error streaming ZIP file");
-        }
-    }
-
-    protected void writeResponse(HttpServletRequest request, HttpServletResponse response, byte[] bytes, String filename, String contentType) throws IOException {
-        if (response.isCommitted()) {
-            return;
-        }
-        OutputStream out = response.getOutputStream();
-        try {
-            response.setHeader("Content-Type", contentType);
-            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-            response.setContentLength(bytes.length);
-            out.write(bytes);
-        } finally {
-            out.flush();
-            out.close();
-        }
     }
 
     /**
@@ -198,7 +152,6 @@ public class DownloadWebSnap extends DataListActionDefault implements PluginWebS
      * @throws IOException 
      */
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //Limit the API for admin usage only
         boolean isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);
         if (!isAdmin) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -216,20 +169,7 @@ public class DownloadWebSnap extends DataListActionDefault implements PluginWebS
             gotenbergDomain,
             Integer.parseInt(gotenbergPort));
         
-        String message = "";
-        if (gotenbergService.pingServer()) {
-            message = AppPluginUtil.getMessage("websnap.gotenberg.connection.ok", getClassName(), MESSAGE_PATH);
-        } else {
-            message = AppPluginUtil.getMessage("websnap.gotenberg.connection.fail", getClassName(), MESSAGE_PATH);
-        }
-        
-        try {
-            JSONObject body = new JSONObject();
-            body.accumulate("message", message);
-            body.write(response.getWriter());
-        } catch (Exception e) {
-            LogUtil.error(getClassName(), e, "Error writing JSON response");
-        }
+        gotenbergService.testGotenbergConnection(response, getClassName());
     }
 
     @Override
@@ -281,17 +221,17 @@ public class DownloadWebSnap extends DataListActionDefault implements PluginWebS
 
     @Override
     public String getVersion() {
-        return AppPluginUtil.getMessage("websnap.version", getClassName(), MESSAGE_PATH);
-    }
-
-    @Override
-    public String getDescription() {
-        return "Download " + AppPluginUtil.getMessage("websnap.description", getClassName(), MESSAGE_PATH);
+        return AppPluginUtil.getMessage("websnap.version", getClassName(), Activator.MESSAGE_PATH);
     }
 
     @Override
     public String getLabel() {
-        return "Download " + AppPluginUtil.getMessage("websnap.label", getClassName(), MESSAGE_PATH);
+        return AppPluginUtil.getMessage("websnap." + getName() + ".label", getClassName(), Activator.MESSAGE_PATH);
+    }
+
+    @Override
+    public String getDescription() {
+        return AppPluginUtil.getMessage("websnap." + getName() + ".description", getClassName(), Activator.MESSAGE_PATH);
     }
 
     @Override
@@ -301,15 +241,11 @@ public class DownloadWebSnap extends DataListActionDefault implements PluginWebS
 
     @Override
     public String getPropertyOptions() {
-        return AppUtil.readPluginResource(getClassName(), "/properties/WebSnap.json", null, true, MESSAGE_PATH);
+        return AppUtil.readPluginResource(getClassName(), Activator.PROPERTIES_PATH + "/" + Activator.SETTINGS_JSON, null, true, Activator.MESSAGE_PATH);
     }
 
     @Override
     public String getIcon() {
-        return AppPluginUtil.getMessage("websnap.icon", getClassName(), MESSAGE_PATH);
-    }
-
-    public String getDecapitalizedName() {
-        return Introspector.decapitalize(getName());
+        return AppPluginUtil.getMessage("websnap.icon.camera", getClassName(), Activator.MESSAGE_PATH);
     }
 }

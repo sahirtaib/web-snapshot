@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class Activator implements BundleActivator {
-
+    public static final String MESSAGE_PATH = "messages/webSnap";
+    public static final String PROPERTIES_PATH = "properties/webSnap";
+    public static final String SETTINGS_JSON = "settings.json";
     private Collection<ServiceRegistration> registrationList;
     protected static GotenbergService gotenbergService;
     
@@ -18,8 +20,16 @@ public class Activator implements BundleActivator {
         
         registrationList.add(
             context.registerService(
-                DownloadWebSnap.class.getName(),
-                new DownloadWebSnap(),
+                FormSnap.class.getName(),
+                new FormSnap(),
+                null
+            )
+        );
+        
+        registrationList.add(
+            context.registerService(
+                PageSnap.class.getName(),
+                new PageSnap(),
                 null
             )
         );
@@ -29,8 +39,8 @@ public class Activator implements BundleActivator {
          */
         // registrationList.add(
         //     context.registerService(
-        //         StoreWebSnap.class.getName(),
-        //         new StoreWebSnap(),
+        //         ToolSnap.class.getName(),
+        //         new ToolSnap(),
         //         null
         //     )
         // );

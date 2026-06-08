@@ -4,7 +4,7 @@
     <groupId>org.joget.support.websnap</groupId>
     <artifactId>web-snapshot</artifactId>
     <packaging>bundle</packaging>
-    <version>9.0.0</version>
+    <version>9.0.1</version>
     <url>http://www.joget.org</url>
 
     <properties>
@@ -41,7 +41,7 @@
                 <configuration>
                     <instructions>
                         <Joget-Name>Web Snapshot</Joget-Name>
-                        <Joget-Description>A browser-accurate snapshot.</Joget-Description>
+                        <Joget-Description>Take a browser-accurate snapshot.</Joget-Description>
                         <Export-Package></Export-Package>
                         <Private-Package>org.joget.support.websnap.*</Private-Package>
                         <Bundle-Activator>org.joget.support.websnap.Activator</Bundle-Activator>
@@ -86,6 +86,11 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
             <version>6.2.17</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>3.0.0</version>
         </dependency>
         <!-- End change plugin specific dependencies here -->
     </dependencies>
