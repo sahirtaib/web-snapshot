@@ -51,12 +51,5 @@ services:
         
         # Start Gotenberg
         exec su -s /bin/sh gotenberg -c 'exec /usr/bin/tini -- gotenberg'
-    networks:
-      - shared
-
-# Defines the Docker network that connects Gotenberg to Joget
-networks:
-  shared:
-    # This network must already exist on your Docker system
-    # If Joget unable to reach Gotenberg server, ask your IT team for Docker assistance
-    external: true
+    ports:
+      - 3000:3000
