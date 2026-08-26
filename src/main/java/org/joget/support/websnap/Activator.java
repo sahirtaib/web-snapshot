@@ -44,6 +44,14 @@ public class Activator implements BundleActivator {
         //         null
         //     )
         // );
+        
+        registrationList.add(
+            context.registerService(
+                GotenbergHealthCheck.class.getName(),
+                new GotenbergHealthCheck(),
+                null
+            )
+        );
     }
     
     @Override

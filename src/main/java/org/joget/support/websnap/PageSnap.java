@@ -26,21 +26,6 @@ import org.json.JSONArray;
 public class PageSnap extends ButtonComponent implements PluginWebSupport {
 
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
-        
-        switch (action) {
-            case "testGotenbergConnection":
-                testGotenbergConnection(request, response);
-                break;
-            case "download":
-                download(request, response);
-                break;
-            default:
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
-        }
-    }
-
-    protected void download(HttpServletRequest request, HttpServletResponse response) throws IOException {
         setPluginProperties();
 
         GotenbergService gotenbergService = Activator.getGotenbergService();
@@ -124,27 +109,6 @@ public class PageSnap extends ButtonComponent implements PluginWebSupport {
                 "?embed=true&" + request.getQueryString();
     }
 
-    protected void testGotenbergConnection(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        boolean isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);
-        if (!isAdmin) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
-        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-        String gotenbergScheme = AppUtil.processHashVariable(request.getParameter("gotenbergScheme"), null, null, null, appDef);
-        String gotenbergDomain = AppUtil.processHashVariable(request.getParameter("gotenbergDomain"), null, null, null, appDef);
-        String gotenbergPort = AppUtil.processHashVariable(request.getParameter("gotenbergPort"), null, null, null, appDef);
-
-        GotenbergService gotenbergService = Activator.getGotenbergService();
-        gotenbergService.configure(
-            gotenbergScheme,
-            gotenbergDomain,
-            Integer.parseInt(gotenbergPort));
-        
-        gotenbergService.testGotenbergConnection(response, getClassName());
-    }
-
     /**
      * wrap button in none printable div only in runtime
      * 
@@ -184,7 +148,7 @@ public class PageSnap extends ButtonComponent implements PluginWebSupport {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         String userviewId = getUserview().getPropertyString("id");
         String uri = request.getContextPath() +"/web/json/app/"+ appDef.getAppId() +"/"+ appDef.getVersion().toString() +"/plugin/"+ getClassName() + "/service" +
-                     "?action=download&appId=" + appDef.getAppId() + "&userviewId=" + userviewId;
+                     "?appId=" + appDef.getAppId() + "&userviewId=" + userviewId;
         
         UserviewMenu menu = getUserview().getCurrent();
         if (menu != null) {

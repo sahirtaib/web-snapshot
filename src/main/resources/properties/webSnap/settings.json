@@ -206,7 +206,7 @@
     "buttons": [{
         "name": "testGotenbergConnection",    
         "label": "@@websnap.connection.test@@",
-        "ajax_url": "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.support.websnap.DataListAction/service?action=testGotenbergConnection",
+        "ajax_url": "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.support.websnap.GotenbergHealthCheck/service",
         "fields": ["gotenbergScheme", "gotenbergDomain", "gotenbergPort"]
     }]
 }]

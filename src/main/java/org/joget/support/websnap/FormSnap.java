@@ -1,26 +1,20 @@
 package org.joget.support.websnap;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListActionDefault;
 import org.joget.apps.datalist.model.DataListActionResult;
-import org.joget.plugin.base.PluginWebSupport;
 import org.joget.support.websnap.gotenberg.GotenbergService;
 import org.joget.support.websnap.gotenberg.UrlToPdfPayload;
 import org.joget.support.websnap.gotenberg.UrlToImagePayload;
 import org.joget.workflow.util.WorkflowUtil;
 
-public class FormSnap extends DataListActionDefault implements PluginWebSupport {
+public class FormSnap extends DataListActionDefault {
     
     @Override
     public DataListActionResult executeAction(DataList dataList, String[] ids) {
@@ -142,34 +136,6 @@ public class FormSnap extends DataListActionDefault implements PluginWebSupport 
         }
         
         return null;
-    }
-
-    /**
-     * JSON API for test connection button
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException 
-     */
-    public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        boolean isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);
-        if (!isAdmin) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
-        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-        String gotenbergScheme = AppUtil.processHashVariable(request.getParameter("gotenbergScheme"), null, null, null, appDef);
-        String gotenbergDomain = AppUtil.processHashVariable(request.getParameter("gotenbergDomain"), null, null, null, appDef);
-        String gotenbergPort = AppUtil.processHashVariable(request.getParameter("gotenbergPort"), null, null, null, appDef);
-
-        GotenbergService gotenbergService = Activator.getGotenbergService();
-        gotenbergService.configure(
-            gotenbergScheme,
-            gotenbergDomain,
-            Integer.parseInt(gotenbergPort));
-        
-        gotenbergService.testGotenbergConnection(response, getClassName());
     }
 
     @Override
